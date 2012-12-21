@@ -1,6 +1,6 @@
 name(mavis).
-version('0.0.1').
-title('Optional type declarations using attributed variables').
+version('0.0.2').
+title('Optional type declarations').
 keywords([types]).
 author( 'Michael Hendricks', 'michael@ndrix.org' ).
 packager( 'Michael Hendricks', 'michael@ndrix.org' ).
