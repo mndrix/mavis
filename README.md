@@ -17,7 +17,7 @@ types are a helpful tool.  They can:
 How?
 ====
 
-Mavis types are defined using error:has_type/2. We might define an
+Mavis types are defined using `error:has_type/2`. We might define an
 `even_integer` type with
 
 ```prolog
@@ -37,13 +37,14 @@ frobnify(A, B) :-
 
 We can declare types for bound variables, like `A`, and
 not-yet-bound variables, like `B`. The type constraints are implemented
-with freeze/2 so they apply as soon as a variable is bound.
+with `freeze/2` so they apply as soon as a variable is bound.
 
 To disable type checking in production, start Prolog with the
-`-O` command line argument. A macro eliminates calls to the/2 so they
+`-O` command line argument. A macro eliminates calls to `the/2` so they
 have no runtime overhead.
 
-the(+Type, ?Value) is det.
+`the(+Type, ?Value) is det.`
+============================
 
 Declare that Value has the given Type.
 Succeeds if Value is bound to a value that's compatible
@@ -53,5 +54,5 @@ If Value is not bound, the type check is delayed until
 Value becomes bound.
 
 When optimizations are enabled
-(`current_prolog_flag(optimise, true)` a macro removes `the`
+(`current_prolog_flag(optimise, true`) a macro removes `the`
 entirely so that it always succeeds.
