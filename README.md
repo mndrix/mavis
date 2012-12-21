@@ -42,17 +42,3 @@ with `freeze/2` so they apply as soon as a variable is bound.
 To disable type checking in production, start Prolog with the
 `-O` command line argument. A macro eliminates calls to `the/2` so they
 have no runtime overhead.
-
-`the(+Type, ?Value) is det.`
-============================
-
-Declare that Value has the given Type.
-Succeeds if Value is bound to a value that's compatible
-with Type.  Throws an informative exception if Value
-is bound to a value that's not compatible with Type.
-If Value is not bound, the type check is delayed until
-Value becomes bound.
-
-When optimizations are enabled
-(`current_prolog_flag(optimise, true`) a macro removes `the`
-entirely so that it always succeeds.
