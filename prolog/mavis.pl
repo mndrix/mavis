@@ -68,21 +68,19 @@ the(Type, Value) :-
     freeze(Value, must_be(Type, Value)).
 :- endif.
 
-split([], _, []).
-split([X], Div, [[X]]) :-
-    dif(X, Div),
+split([], _, [[]]) :-
     !.  % optimization
 split([Div|T], Div, [[]|Rest]) :-
-    split(T, Div, Rest),
+    split(T, Div, Rest),  % implies: dif(Rest, [])
     !.  % optimization
 split([H|T], Div, [[H|First]|Rest]) :-
     dif(H, Div),
-    split(T, Div, [First|Rest]).  % implies: dif(T, [])
+    split(T, Div, [First|Rest]).
 
 
 :- begin_tests(split).
 test(forward_zero) :-
-    split("", 10, []).
+    split("", 10, [""]).
 test(forward_one) :-
     split("hello", 10, ["hello"]).
 test(forward_two) :-
@@ -91,7 +89,7 @@ test(forward_three) :-
     split("hello\naravis\njericho", 10, ["hello","aravis","jericho"]).
 
 test(backward_zero) :-
-    split(Codes, 10, []),
+    split(Codes, 10, [[]]),
     Codes = [].
 test(backward_one) :-
     split(Codes, 10, ["hello"]),
@@ -110,9 +108,9 @@ test(find_separator) :-
     [Div] = ",".
 
 test(forward_trailing_zero) :-
-    split("\n", 10, [[]]).
+    split("\n", 10, ["",""]).
 test(forward_trailing_one) :-
-    split("hello\n", 10, ["hello"]).
+    split("hello\n", 10, ["hello",""]).
 test(forward_trailing_two) :-
-    split("hello\ngoodbye\n", 10, ["hello", "goodbye"]).
+    split("hello\ngoodbye\n", 10, ["hello", "goodbye", ""]).
 :- end_tests(split).
