@@ -82,7 +82,7 @@ split([H|T], Div, [[H|First]|Rest]) :-
 
 :- begin_tests(split).
 test(forward_zero) :-
-    split([], 10, []).
+    split("", 10, []).
 test(forward_one) :-
     split("hello", 10, ["hello"]).
 test(forward_two) :-
