@@ -68,6 +68,12 @@ the(Type, Value) :-
     freeze(Value, must_be(Type, Value)).
 :- endif.
 
+%%  split(?Combined:list(T), ?Separator:T, ?Separated:list(list(T))) is det.
+%
+%	True if elements from Separated joined together with Separator form
+%	Combined.  Can be used to split a list into sublists on a separator
+%	or combined several sublists into a single list by joining with a
+%	separator.
 split([], _, [[]]) :-
     !.  % optimization
 split([Div|T], Div, [[]|Rest]) :-
