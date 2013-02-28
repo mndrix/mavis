@@ -70,7 +70,7 @@ user:goal_expansion(the(_,_), true).
 
 :- use_module(library(pldoc/doc_modes), []).
 :- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
-:- use_module(library(memfile), [atom_to_memory_file/2, open_memory_file/4]).
+:- use_module(library(charsio), [read_term_from_chars/3]).
 
 % extract mode declaration from a structured comment
 mode_declaration(Comment, ModeCodes) :-
@@ -78,18 +78,10 @@ mode_declaration(Comment, ModeCodes) :-
     indented_lines(Codes, ["%"], Lines),
     pldoc_modes:mode_lines(Lines, ModeCodes, [], _).
 
-% open a stream to read from a list of codes
-open_codes(Codes, Stream) :-
-    atom_codes(Atom, Codes),
-    atom_to_memory_file(Atom, MF),
-    open_memory_file(MF, read, Stream, [free_on_close(true)]).
-
+% read a raw mode declaration from character codes
 read_mode_declaration(ModeCodes, Mode) :-
     Options = [module(pldoc_modes), variable_names(Vars)],
-    setup_call_cleanup(open_codes(ModeCodes, Stream),
-                       read_term(Stream, Term, Options),
-                       close(Stream)),
-	Mode = Term,
+    read_term_from_chars(ModeCodes, Mode, Options),
     maplist(call,Vars).
 
 :- multifile prolog:comment_hook/3.
