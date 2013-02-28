@@ -70,42 +70,43 @@ user:goal_expansion(the(_,_), true).
 
 :- use_module(library(pldoc/doc_modes), []).
 :- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
-:- use_module(library(memfile), [new_memory_file/1, open_memory_file/3]).
+:- use_module(library(memfile), [atom_to_memory_file/2, open_memory_file/4]).
 
-comment_codes(Comment, ModeCodes) :-
+% extract mode declaration from a structured comment
+mode_declaration(Comment, ModeCodes) :-
     string_to_list(Comment, Codes),
     indented_lines(Codes, ["%"], Lines),
     pldoc_modes:mode_lines(Lines, ModeCodes, [], _).
 
-chars_stream(Codes, Stream) :-
-    new_memory_file(MF),
-    setup_call_cleanup(open_memory_file(MF, write, Out),
-                       format(Out, '~s~w', [Codes, '\n.\n']),
-                       close(Out)),
+% open a stream to read from a list of codes
+open_codes(Codes, Stream) :-
+    atom_codes(Atom, Codes),
+    atom_to_memory_file(Atom, MF),
     open_memory_file(MF, read, Stream, [free_on_close(true)]).
 
-read_mode_term(ModeCodes, Mode) :-
-    Options = [module(pldoc_modes)],
-    setup_call_cleanup(chars_stream(ModeCodes, Stream),
+read_mode_declaration(ModeCodes, Mode) :-
+    Options = [module(pldoc_modes), variable_names(Vars)],
+    setup_call_cleanup(open_codes(ModeCodes, Stream),
                        read_term(Stream, Term, Options),
                        close(Stream)),
-	Mode = Term.
+	Mode = Term,
+    maplist(call,Vars).
 
 :- multifile prolog:comment_hook/3.
 prolog:comment_hook([_-Comment|_],_,_) :-
     prolog_load_context(module, Module),
     Module = mavis,
 
-    comment_codes(Comment, ModeText),
-    read_mode_term(ModeText, Mode),
+    mode_declaration(Comment, ModeText),
+    read_mode_declaration(ModeText, Mode),
 
-    nl,nl,
-    format('mode = ~w:~w~n', [Module, Mode]).
+    write_canonical(Mode),
+    nl.
 
 the(Type, Value) :-
     freeze(Value, must_be(Type, Value)).
 
-%%	foo(+A:integer, -B, C) is semidet.
+%%	foo(+A:integer, -B, C)// is semidet.
 %
 %	This is a fake structured comment.
 foo(_,_).
