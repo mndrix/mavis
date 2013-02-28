@@ -1,4 +1,5 @@
 :- module(mavis, [the/2]).
+
 /** <module> Optional type declarations
 
 The =mavis= module (because she helps with typing ;-) allows one to
@@ -61,9 +62,39 @@ have no runtime overhead.
 %	(=|current_prolog_flag(optimise, true)|= a macro removes =the=
 %	entirely so that it always succeeds.
 :- if(current_prolog_flag(optimise,true)).
+
 the(_,_).  % avoid "Exported procedure mavis:the/2 is not defined"
 user:goal_expansion(the(_,_), true).
+
 :- else.
+
+:- use_module(library(dcg/basics)).
+
+% extract mode and type declaration from a "%%" comment line
+declaration(D) -->
+    "%%",
+    whites,
+    string_without("\n", D).
+
+:- multifile prolog:comment_hook/3.
+prolog:comment_hook([_-CommentString|_],_,_) :-
+    prolog_load_context(module, Module),
+    \+ memberchk(Module, [ansi_term, prolog_history]),  % blacklist
+    string_to_list(CommentString, Comment),
+    phrase(declaration(Declaration), Comment, _),
+    atom_codes(DeclarationAtom, Declaration),
+    atom_to_term(DeclarationAtom, Modes, _),
+    nl,nl,
+    format('modes = ~w:~w~n', [Module, Modes]).
+
 the(Type, Value) :-
     freeze(Value, must_be(Type, Value)).
+
+%%	foo(+A:integer, -B, C) is semidet.
+%
+%	This is a fake structured comment.
+foo(_,_).
+
+%%	bad_det(A) is nosuch
+
 :- endif.
