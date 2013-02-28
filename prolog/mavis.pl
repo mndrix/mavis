@@ -68,24 +68,39 @@ user:goal_expansion(the(_,_), true).
 
 :- else.
 
-:- use_module(library(dcg/basics)).
+:- use_module(library(pldoc/doc_modes), []).
+:- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
+:- use_module(library(memfile), [new_memory_file/1, open_memory_file/3]).
 
-% extract mode and type declaration from a "%%" comment line
-declaration(D) -->
-    "%%",
-    whites,
-    string_without("\n", D).
+comment_codes(Comment, ModeCodes) :-
+    string_to_list(Comment, Codes),
+    indented_lines(Codes, ["%"], Lines),
+    pldoc_modes:mode_lines(Lines, ModeCodes, [], _).
+
+chars_stream(Codes, Stream) :-
+    new_memory_file(MF),
+    setup_call_cleanup(open_memory_file(MF, write, Out),
+                       format(Out, '~s~w', [Codes, '\n.\n']),
+                       close(Out)),
+    open_memory_file(MF, read, Stream, [free_on_close(true)]).
+
+read_mode_term(ModeCodes, Mode) :-
+    Options = [module(pldoc_modes)],
+    setup_call_cleanup(chars_stream(ModeCodes, Stream),
+                       read_term(Stream, Term, Options),
+                       close(Stream)),
+	Mode = Term.
 
 :- multifile prolog:comment_hook/3.
-prolog:comment_hook([_-CommentString|_],_,_) :-
+prolog:comment_hook([_-Comment|_],_,_) :-
     prolog_load_context(module, Module),
-    \+ memberchk(Module, [ansi_term, prolog_history]),  % blacklist
-    string_to_list(CommentString, Comment),
-    phrase(declaration(Declaration), Comment, _),
-    atom_codes(DeclarationAtom, Declaration),
-    atom_to_term(DeclarationAtom, Modes, _),
+    Module = mavis,
+
+    comment_codes(Comment, ModeText),
+    read_mode_term(ModeText, Mode),
+
     nl,nl,
-    format('modes = ~w:~w~n', [Module, Modes]).
+    format('mode = ~w:~w~n', [Module, Mode]).
 
 the(Type, Value) :-
     freeze(Value, must_be(Type, Value)).
@@ -95,6 +110,13 @@ the(Type, Value) :-
 %	This is a fake structured comment.
 foo(_,_).
 
-%%	bad_det(A) is nosuch
-
 :- endif.
+
+
+
+
+
+
+
+
+
