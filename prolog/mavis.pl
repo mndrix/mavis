@@ -75,7 +75,7 @@ activate(Module) :-
 %	Value becomes bound.
 %
 %	When optimizations are enabled
-%	(=|current_prolog_flag(optimise, true)|= a macro removes =the=
+%	(=|current_prolog_flag(optimise, true)|=) a macro removes =the=
 %	entirely so that it always succeeds.
 :- if(current_prolog_flag(optimise,true)).
 
