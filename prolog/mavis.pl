@@ -68,6 +68,7 @@ user:goal_expansion(the(_,_), true).
 
 :- else.
 
+:- use_module(library(dcg/basics), [blank//0, string//1]).
 :- use_module(library(pldoc/doc_modes), []).
 :- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
 :- use_module(library(charsio), [read_term_from_chars/3]).
@@ -75,8 +76,36 @@ user:goal_expansion(the(_,_), true).
 % extract mode declaration from a structured comment
 mode_declaration(Comment, ModeCodes) :-
     string_to_list(Comment, Codes),
-    indented_lines(Codes, ["%"], Lines),
+    phrase(structured_comment(Prefixes), Codes, _),
+    indented_lines(Codes, Prefixes, Lines),
     pldoc_modes:mode_lines(Lines, ModeCodes, [], _).
+
+% structured_comment//1 and predicates called from it
+% are based on code in the pldoc_process module.
+% That module has code we can't import without breaking
+% our comment hook.
+structured_comment(["%"]) -->
+    "%%", blank,
+    \+ separator_line.
+structured_comment(Prefixes) -->
+    "/**", blank,
+    { Prefixes = ["/**", " *"] }.
+
+separator_line -->
+    string(S), "\n", !,
+    {   maplist(blank_or_percent, S)
+    ;   contains(S, " SWI ")
+    ;   contains(S, " SICStus ")
+    ;   contains(S, " Mats ")
+    }.
+
+blank_or_percent(0'%) :- !.
+blank_or_percent(C) :-
+    code_type(C, space).
+
+contains(Haystack, Needle) :-
+    append(_, Start, Haystack),
+    append(Needle, _, Start), !.
 
 % read a raw mode declaration from character codes
 read_mode_declaration(ModeCodes, Mode) :-
@@ -109,20 +138,8 @@ prolog:comment_hook([_-Comment|_],_,_) :-
     normalize_mode(RawMode, Module, Mode),
     assert(Mode).
 
-
 the(Type, Value) :-
     freeze(Value, must_be(Type, Value)).
-
-%%	foo(+A:integer, -B, C)// is semidet.
-%
-%	This is a fake structured comment.
-foo(_,_).
-
-%%	lazy(X)
-lazy(_).
-
-%%	just_type(Y:integer) is det.
-just_type(_).
 
 :- endif.
 
