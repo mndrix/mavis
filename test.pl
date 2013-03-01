@@ -1,6 +1,6 @@
 :- use_module(mavis).
 :- mavis:activate(user).
 
-%% stuff(X:atom) is semidet.
-stuff(Name) :-
-    format('hello ~w~n', Name).
+%% stuff(+Greeting:integer, +X:atom) is semidet.
+stuff(Greeting, Name) :-
+    format('~w, ~w~n', [Greeting,Name]).
