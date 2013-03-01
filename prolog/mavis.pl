@@ -89,6 +89,7 @@ user:goal_expansion(the(_,_), true).
 :- use_module(library(pldoc/doc_modes), []).
 :- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
 :- use_module(library(charsio), [read_term_from_chars/3]).
+:- use_module(library(when), [when/2]).
 
 % extract mode declaration from a structured comment
 mode_declaration(Comment, ModeCodes) :-
@@ -156,7 +157,7 @@ prolog:comment_hook([_-Comment|_],_,_) :-
     assert(Mode).
 
 the(Type, Value) :-
-    freeze(Value, must_be(Type, Value)).
+    when(ground(Value), must_be(Type, Value)).
 
 % create a the/2 type assertion based on a variable and
 % the declared mode information for that variable.
