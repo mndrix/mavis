@@ -1,6 +1,6 @@
-:- module(mavis, [the/2]).
+:- module(mavis, [activate/1, the/2]).
 
-/** <module> Optional type declarations 
+/** <module> Optional type declarations
 Declare optional types which are checked during development time.
 See pack documentation for more information.
 */
@@ -13,7 +13,7 @@ module_wants_mavis(mavis).
 %	Tell mavis that structured comments in Module should be converted
 %	into the/2 type assertions during development.  This requirement
 %	is temporary and will be removed once SWI-Prolog provides a
-%	post-use_module hook.
+%	post-=use_module= hook.
 activate(Module) :-
     module_wants_mavis(Module),  % avoid duplicate facts
     !.
@@ -28,7 +28,7 @@ activate(Module) :-
 %	with Type.  Throws an informative exception if Value
 %	is bound to a value that's not compatible with Type.
 %	If Value is not bound, the type check is delayed until
-%	Value becomes bound.
+%	Value becomes ground.
 %
 %	When optimizations are enabled
 %	(=|current_prolog_flag(optimise, true)|=) a macro removes =the=
