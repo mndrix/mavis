@@ -85,6 +85,7 @@ user:goal_expansion(the(_,_), true).
 :- else.
 
 :- use_module(library(dcg/basics), [blank//0, string//1]).
+:- use_module(library(list_util), [xfy_list/3]).
 :- use_module(library(pldoc/doc_modes), []).
 :- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
 :- use_module(library(charsio), [read_term_from_chars/3]).
@@ -156,6 +157,32 @@ prolog:comment_hook([_-Comment|_],_,_) :-
 
 the(Type, Value) :-
     freeze(Value, must_be(Type, Value)).
+
+% create a the/2 type assertion based on a variable and
+% the declared mode information for that variable.
+type_declaration(Var, arg(_,_,Type), the(Type, Var)).
+
+% convert a clause head into a goal which asserts all types
+% associated with that head.  Slash is '/' for a normal
+% predicate and '//' for a DCG.  Pneumonic: foo/1 vs foo//1
+build_type_assertions(Slash, Head, TypeGoal) :-
+    prolog_load_context(module, Module),
+    Module \= mavis,
+    mavis:module_wants_mavis(Module),
+    Head =.. [Name|HeadArgs],
+    length(HeadArgs, Arity),
+    Indicator =.. [Slash, Name, Arity],
+    mavis:mode(Module, Indicator, ModeArgs, _),
+    maplist(type_declaration, HeadArgs, ModeArgs, Types),
+    xfy_list(',', TypeGoal, Types).
+
+user:term_expansion((Head:-Body), (Head:-TypeGoal,Body)) :-
+    Slash = '/',
+    build_type_assertions(Slash, Head, TypeGoal).
+
+user:term_expansion((Head-->Body), (Head-->{TypeGoal},Body)) :-
+    Slash = '//',
+    build_type_assertions(Slash, Head, TypeGoal).
 
 :- endif.
 
