@@ -1,5 +1,5 @@
 name(mavis).
-version('0.1.0').
+version('0.1.1').
 title('Optional type declarations').
 keywords([types]).
 
@@ -9,4 +9,4 @@ author( 'Michael Hendricks', 'michael@ndrix.org' ).
 packager( 'Michael Hendricks', 'michael@ndrix.org' ).
 maintainer( 'Michael Hendricks', 'michael@ndrix.org' ).
 home('http://packs.ndrix.com/mavis/index.html').
-download('http://packs.ndrix.com/mavis/mavis-0.1.0.tgz').
+download('http://packs.ndrix.com/mavis/mavis-0.1.1.tgz').
