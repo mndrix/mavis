@@ -49,6 +49,22 @@ have no runtime overhead.
 @license BSD
 */
 
+:- dynamic module_wants_mavis/1.
+module_wants_mavis(mavis).
+
+%%	activate(+Module:atom) is det.
+%
+%	Tell mavis that structured comments in Module should be converted
+%	into the/2 type assertions during development.  This requirement
+%	is temporary and will be removed once SWI-Prolog provides a
+%	post-use_module hook.
+activate(Module) :-
+    module_wants_mavis(Module),  % avoid duplicate facts
+    !.
+activate(Module) :-
+    \+ module_wants_mavis(Module),
+    assert(module_wants_mavis(Module)).
+
 %%	the(+Type, ?Value) is det.
 %
 %	Declare that Value has the given Type.
@@ -132,7 +148,7 @@ normalize_args(X0, arg(Mode,Name,Type)) :-
 :- multifile prolog:comment_hook/3.
 prolog:comment_hook([_-Comment|_],_,_) :-
     prolog_load_context(module, Module),
-    %Module = mavis, % TODO remove me
+    module_wants_mavis(Module),
     mode_declaration(Comment, ModeText),
     read_mode_declaration(ModeText, RawMode),
     normalize_mode(RawMode, Module, Mode),
