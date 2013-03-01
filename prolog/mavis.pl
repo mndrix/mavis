@@ -84,16 +84,31 @@ read_mode_declaration(ModeCodes, Mode) :-
     read_term_from_chars(ModeCodes, Mode, Options),
     maplist(call,Vars).
 
+% convert mode declarations to a standard form
+normalize_mode(Mode0, Module, mode(Module, Indicator, Args, Det)) :-
+    (Mode0 = is(Mode1, Det) -> true; Mode1=Mode0, Det=nondet),
+    (Mode1 = //(Mode2) -> Slash='//'; Mode2=Mode1, Slash='/' ),
+    Mode2 =.. [Functor|RawArgs],
+    length(RawArgs, Arity),
+    Indicator =.. [Slash, Functor, Arity],
+    maplist(normalize_args, RawArgs, Args).
+
+normalize_args(X0, arg(Mode,Name,Type)) :-
+    ( X0 =.. [Mode0,Arg] -> true; Mode0='?', Arg=X0 ),
+    ( member(Mode0, [+,-,?,:,@,!]) -> Mode=Mode0; Mode='?' ),
+    ( Arg = Name:Type -> true; Name=Arg, Type=any).
+
+% Convert PlDoc structured comments into mavis:mode/4 facts.
+:- dynamic mode/4.
 :- multifile prolog:comment_hook/3.
 prolog:comment_hook([_-Comment|_],_,_) :-
     prolog_load_context(module, Module),
-    Module = mavis,
-
+    %Module = mavis, % TODO remove me
     mode_declaration(Comment, ModeText),
-    read_mode_declaration(ModeText, Mode),
+    read_mode_declaration(ModeText, RawMode),
+    normalize_mode(RawMode, Module, Mode),
+    assert(Mode).
 
-    write_canonical(Mode),
-    nl.
 
 the(Type, Value) :-
     freeze(Value, must_be(Type, Value)).
@@ -102,6 +117,12 @@ the(Type, Value) :-
 %
 %	This is a fake structured comment.
 foo(_,_).
+
+%%	lazy(X)
+lazy(_).
+
+%%	just_type(Y:integer) is det.
+just_type(_).
 
 :- endif.
 
