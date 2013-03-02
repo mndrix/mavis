@@ -6,7 +6,6 @@ See pack documentation for more information.
 */
 
 :- dynamic module_wants_mavis/1.
-module_wants_mavis(mavis).
 
 %%	activate(+Module:atom) is det.
 %
