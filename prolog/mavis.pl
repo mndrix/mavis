@@ -1,24 +1,12 @@
-:- module(mavis, [activate/1, the/2]).
+:- module(mavis, [the/2]).
 
 /** <module> Optional type declarations
 Declare optional types which are checked during development time.
 See pack documentation for more information.
 */
 
-:- dynamic module_wants_mavis/1.
-
-%%	activate(+Module:atom) is det.
-%
-%	Tell mavis that structured comments in Module should be converted
-%	into the/2 type assertions during development.  This requirement
-%	is temporary and will be removed once SWI-Prolog provides a
-%	post-=use_module= hook.
-activate(Module) :-
-    module_wants_mavis(Module),  % avoid duplicate facts
-    !.
-activate(Module) :-
-    \+ module_wants_mavis(Module),
-    assert(module_wants_mavis(Module)).
+module_wants_mavis(Module) :-
+    predicate_property(Module:the(_,_), imported_from(mavis)).
 
 %%	the(+Type, ?Value) is det.
 %

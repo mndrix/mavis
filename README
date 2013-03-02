@@ -5,9 +5,7 @@
 ---+ Synopsis
 
 ==
-:- module(foo).
 :- use_module(library(mavis)).
-:- mavis:activate(foo).
 
 %% even(+X:integer) is semidet.
 even(X) :-
