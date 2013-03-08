@@ -61,7 +61,7 @@ normalize_args(X0, arg(Mode,Name,Type)) :-
     ( Arg = Name:Type -> true; Name=Arg, Type=any).
 
 the(Type, Value) :-
-    when(ground(Value), must_be(Type, Value)).
+    when(ground(Value), error:must_be(Type, Value)).
 
 % create a the/2 type assertion based on a variable and
 % the declared mode information for that variable.
