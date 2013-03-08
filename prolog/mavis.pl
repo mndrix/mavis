@@ -27,10 +27,10 @@ user:goal_expansion(the(_,_), true).
 
 :- else.
 
-:- use_module(library(pldoc)).
-:- use_module(library(list_util), [xfy_list/3]).
-:- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
 :- use_module(library(charsio), [read_term_from_chars/3]).
+:- use_module(library(list_util), [xfy_list/3]).
+:- use_module(library(pldoc)).
+:- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
 :- use_module(library(when), [when/2]).
 :- doc_collect(true).
 
