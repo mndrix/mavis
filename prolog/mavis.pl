@@ -27,12 +27,13 @@ user:goal_expansion(the(_,_), true).
 
 :- else.
 
+:- use_module(library(pldoc)).
 :- use_module(library(dcg/basics), [blank//0, string//1]).
 :- use_module(library(list_util), [xfy_list/3]).
-:- use_module(library(pldoc/doc_modes), []).
 :- use_module(library(pldoc/doc_wiki), [indented_lines/3]).
 :- use_module(library(charsio), [read_term_from_chars/3]).
 :- use_module(library(when), [when/2]).
+:- doc_collect(true).
 
 % extract mode declaration from a structured comment
 mode_declaration(Comment, ModeCodes) :-
@@ -75,29 +76,16 @@ read_mode_declaration(ModeCodes, Mode) :-
     maplist(call,Vars).
 
 % convert mode declarations to a standard form
-normalize_mode(Mode0, Module, mode(Module, Indicator, Args, Det)) :-
+normalize_mode(Mode0, Args, Det) :-
     (Mode0 = is(Mode1, Det) -> true; Mode1=Mode0, Det=nondet),
     (Mode1 = //(Mode2) -> Slash='//'; Mode2=Mode1, Slash='/' ),
-    Mode2 =.. [Functor|RawArgs],
-    length(RawArgs, Arity),
-    Indicator =.. [Slash, Functor, Arity],
+    Mode2 =.. [_|RawArgs],
     maplist(normalize_args, RawArgs, Args).
 
 normalize_args(X0, arg(Mode,Name,Type)) :-
     ( X0 =.. [Mode0,Arg] -> true; Mode0='?', Arg=X0 ),
     ( member(Mode0, [+,-,?,:,@,!]) -> Mode=Mode0; Mode='?' ),
     ( Arg = Name:Type -> true; Name=Arg, Type=any).
-
-% Convert PlDoc structured comments into mavis:mode/4 facts.
-:- dynamic mode/4.
-:- multifile prolog:comment_hook/3.
-prolog:comment_hook([_-Comment|_],_,_) :-
-    prolog_load_context(module, Module),
-    module_wants_mavis(Module),
-    mode_declaration(Comment, ModeText),
-    read_mode_declaration(ModeText, RawMode),
-    normalize_mode(RawMode, Module, Mode),
-    assert(Mode).
 
 the(Type, Value) :-
     when(ground(Value), must_be(Type, Value)).
@@ -110,13 +98,22 @@ type_declaration(Var, arg(_,_,Type), the(Type, Var)).
 % associated with that head.  Slash is '/' for a normal
 % predicate and '//' for a DCG.  Pneumonic: foo/1 vs foo//1
 build_type_assertions(Slash, Head, TypeGoal) :-
+    % does this module want mavis type assertions?
     prolog_load_context(module, Module),
     Module \= mavis,
     mavis:module_wants_mavis(Module),
-    Head =.. [Name|HeadArgs],
-    length(HeadArgs, Arity),
+
+    % fetch this predicate's structured comment
+    functor(Head, Name, Arity),
     Indicator =.. [Slash, Name, Arity],
-    mavis:mode(Module, Indicator, ModeArgs, _),
+    pldoc_process:doc_comment(Module:Indicator,_,_,Comment),
+
+    % parse and normalize mode description
+    mode_declaration(Comment, ModeText),
+    read_mode_declaration(ModeText, RawMode),
+    normalize_mode(RawMode, ModeArgs, _Determinism),
+
+    Head =.. [Name|HeadArgs],
     maplist(type_declaration, HeadArgs, ModeArgs, Types),
     xfy_list(',', TypeGoal, Types).
 
