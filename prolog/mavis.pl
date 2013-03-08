@@ -27,6 +27,7 @@ user:goal_expansion(the(_,_), true).
 
 :- else.
 
+:- use_module(library(apply), [exclude/3]).
 :- use_module(library(charsio), [read_term_from_chars/3]).
 :- use_module(library(list_util), [xfy_list/3]).
 :- use_module(library(pldoc)).
@@ -86,7 +87,8 @@ build_type_assertions(Slash, Head, TypeGoal) :-
     normalize_mode(RawMode, ModeArgs, _Determinism),
 
     Head =.. [Name|HeadArgs],
-    maplist(type_declaration, HeadArgs, ModeArgs, Types),
+    maplist(type_declaration, HeadArgs, ModeArgs, AllTypes),
+    exclude(=@=(the(any, _)), AllTypes, Types),
     xfy_list(',', TypeGoal, Types).
 
 user:term_expansion((Head:-Body), (Head:-TypeGoal,Body)) :-

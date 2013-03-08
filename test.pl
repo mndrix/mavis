@@ -14,5 +14,10 @@ grammar(Name) -->
     "hello ",
     string(Name).
 
+%%  from_name(Codes, Atom, Extra:atom)
+from_name(Codes, Atom, Extra) :-
+    Extra = extra,
+    atom_codes(Atom, Codes).
+
 %% lazy(Foo)
 lazy(_).
