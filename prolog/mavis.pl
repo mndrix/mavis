@@ -52,6 +52,7 @@ read_mode_declaration(ModeCodes, Mode) :-
 normalize_mode(Mode0, Args, Det) :-
     (Mode0 = is(Mode1, Det) -> true; Mode1=Mode0, Det=nondet),
     (Mode1 = //(Mode2) -> Slash='//'; Mode2=Mode1, Slash='/' ),
+    _ = Slash, % avoid singleton warnings (until Slash is needed)
     Mode2 =.. [_|RawArgs],
     maplist(normalize_args, RawArgs, Args).
 
