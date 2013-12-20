@@ -76,5 +76,19 @@ To disable type checking in production, start Prolog with the
 =|-O|= command line argument. A macro eliminates calls to the/2 so they
 have no runtime overhead.
 
+# Changes in this Version
+
+  * TODO
+
+# Installation
+
+Using SWI-Prolog 6.3.16 or later:
+
+    $ swipl
+    1 ?- pack_install(mavis).
+
+Source code available and pull requests accepted on GitHub:
+https://github.com/mndrix/mavis
+
 @author Michael Hendricks <michael@ndrix.org>
 @license BSD

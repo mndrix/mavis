@@ -38,7 +38,7 @@ user:goal_expansion(the(_,_), true).
 % extract mode declaration from a structured comment
 mode_declaration(Comment, ModeCodes) :-
     string_to_list(Comment, Codes),
-    phrase(pldoc_process:structured_comment(Prefixes), Codes, _),
+    phrase(pldoc_process:structured_comment(Prefixes,_), Codes, _),
     indented_lines(Codes, Prefixes, Lines),
     pldoc_modes:mode_lines(Lines, ModeCodes, [], _).
 
