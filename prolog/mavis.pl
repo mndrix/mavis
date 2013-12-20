@@ -57,9 +57,10 @@ normalize_mode(Mode0, Args, Det) :-
     maplist(normalize_args, RawArgs, Args).
 
 normalize_args(X0, arg(Mode,Name,Type)) :-
-    ( X0 =.. [Mode0,Arg] -> true; Mode0='?', Arg=X0 ),
+    ( var(X0) -> X1 = ?(X0:any) ; X1=X0 ),
+    ( X1 =.. [Mode0,Arg] -> true; Mode0='?', Arg=X1 ),
     ( member(Mode0, [+,-,?,:,@,!]) -> Mode=Mode0; Mode='?' ),
-    ( Arg = Name:Type -> true; Name=Arg, Type=any).
+    ( nonvar(Arg), Arg=Name:Type -> true; Name=Arg, Type=any).
 
 the(Type, Value) :-
     when(ground(Value), error:must_be(Type, Value)).
