@@ -1,12 +1,10 @@
 ---+ Synopsis
 
-==
-:- use_module(library(mavis)).
+    :- use_module(library(mavis)).
 
-%% even(+X:integer) is semidet.
-even(X) :-
-    0 is X mod 2.
-==
+    %% even(+X:integer) is semidet.
+    even(X) :-
+        0 is X mod 2.
 
 ---+ Description
 
@@ -19,17 +17,15 @@ stack track which assists in locating the error.
 In *production*, the declarations are completely removed by macros
 and do nothing.  Production time
 is defined as any time when optimization is enabled:
-=|current_prolog_flag(optimise, true)|=.
+`current_prolog_flag(optimise, true)`.
 
-Type declarations can be give manually by calling the/2.  =mavis= also inserts
+Type declarations can be give manually by calling the/2.  `mavis` also inserts
 type declarations for you based on your PlDoc structured comments.  For
-example, during development, the definition of =even= above becomes
+example, during development, the definition of `even` above becomes
 
-==
-even(A) :-
-    the(integer, A),
-    0 is A mod 2.
-==
+    even(A) :-
+        the(integer, A),
+        0 is A mod 2.
 
 ---++ Why?
 
@@ -44,36 +40,30 @@ sometimes more precise types are a helpful tool.  They can:
 ---+ Defining new types
 
 Mavis types are defined using error:has_type/2. We might define an
-=even_integer= type with
+`even_integer` type with
 
-==
-error:has_type(even_integer, X) :-
-    0 is X mod 2.
-==
+    error:has_type(even_integer, X) :-
+        0 is X mod 2.
 
 We can use the definition manually:
 
-==
-frobnify(A, B) :-
-    the(integer, A),
-    the(even_integer, B),
-    B is 2*A.
-==
+    frobnify(A, B) :-
+        the(integer, A),
+        the(even_integer, B),
+        B is 2*A.
 
 or simply add it to our PlDoc comments:
 
-==
-%% frobnify(+A:integer, -B:even_integer)
-frobnify(A, B) :-
-    B is 2*A.
-==
+    %% frobnify(+A:integer, -B:even_integer)
+    frobnify(A, B) :-
+        B is 2*A.
 
-We can declare types for bound variables, like =A=, and
-not-yet-bound variables, like =B=. The type constraints are implemented
+We can declare types for bound variables, like `A`, and
+not-yet-bound variables, like `B`. The type constraints are implemented
 with when/2 so they apply as soon as a variable is ground.
 
 To disable type checking in production, start Prolog with the
-=|-O|= command line argument. A macro eliminates calls to the/2 so they
+`-O` command line argument. A macro eliminates calls to the/2 so they
 have no runtime overhead.
 
 # Changes in this Version
