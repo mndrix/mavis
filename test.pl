@@ -1,4 +1,4 @@
-:- use_module(mavis).
+:- use_module(library(mavis)).
 :- use_module(library(dcg/basics), [string//1]).
 
 %% stuff(+Greeting:integer, +X:atom) is semidet.
