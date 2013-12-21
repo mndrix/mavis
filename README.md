@@ -1,4 +1,4 @@
----+ Synopsis
+# Synopsis
 
     :- use_module(library(mavis)).
 
@@ -6,7 +6,7 @@
     even(X) :-
         0 is X mod 2.
 
----+ Description
+# Description
 
 The =mavis= module (because she helps with typing ;-) allows one to
 use optional type declarations in Prolog code. During *development*,
@@ -27,7 +27,7 @@ example, during development, the definition of `even` above becomes
         the(integer, A),
         0 is A mod 2.
 
----++ Why?
+## Why?
 
 We love dynamic types. That's one reason we love Prolog. But
 sometimes more precise types are a helpful tool.  They can:
@@ -37,7 +37,7 @@ sometimes more precise types are a helpful tool.  They can:
   * structure our thinking during development
   * provide data for static analysis tools
 
----+ Defining new types
+# Defining new types
 
 Mavis types are defined using error:has_type/2. We might define an
 `even_integer` type with
