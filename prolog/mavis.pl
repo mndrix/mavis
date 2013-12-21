@@ -1,4 +1,5 @@
 :- module(mavis, [ the/2
+                 , has_intersection/2
                  , has_subtype/2
                  ]).
 
@@ -153,4 +154,41 @@ counter_example(Type, Subtype, Example) :-
     between(1,100,_),
     quickcheck:arbitrary(Subtype, Example),
     \+ error:is_of_type(Type, Example),
+    !.
+
+
+%% type_intersection(?Type, ?IntersectionType)
+%
+%  Multifile predicate for declaring that Type has an IntersectionType.
+%  See type_subtype/2 for further details.
+:- dynamic type_intersection/2.
+:- multifile type_intersection/2.
+
+
+%% has_intersection(Type, IntersectionType) is semidet
+%
+%  True if some value of IntersectionType is also of Type. See
+%  has_subtype/2 for further details.
+has_intersection(Type, Intersection) :-
+    ( var(Type); var(Intersection) ),
+    !,
+    fail.
+has_intersection(Type, Intersection) :-
+    type_intersection(Type, Intersection),
+    !.
+has_intersection(Type, Subtype) :-
+    % lazy load some libraries we'll need here
+    use_module(library(quickcheck)),
+    use_module(library(error)),
+
+    error:must_be(nonvar, Type),
+    error:must_be(arbitrary_type, Subtype),
+    shared_value(Type, Subtype, _),
+    assert(type_intersection(Type, Subtype)).
+
+% Find a value shared by both Type and Subtype
+shared_value(Type, Subtype, Value) :-
+    between(1,100,_),
+    quickcheck:arbitrary(Subtype, Value),
+    error:is_of_type(Type, Value),
     !.
