@@ -137,12 +137,12 @@ has_subtype(Type, Subtype) :-
     type_subtype(Type, Subtype),
     !.
 has_subtype(Type, Subtype) :-
-    % lazy load some libraries we'll need only here
+    % lazy load some libraries we'll need here
     use_module(library(quickcheck)),
     use_module(library(error)),
 
-    must_be(nonvar, Type),
-    must_be(arbitrary_type, Subtype),
+    error:must_be(nonvar, Type),
+    error:must_be(arbitrary_type, Subtype),
     \+ counter_example(Type, Subtype, _),
     assert(type_subtype(Type, Subtype)).
 
@@ -152,5 +152,5 @@ has_subtype(Type, Subtype) :-
 counter_example(Type, Subtype, Example) :-
     between(1,100,_),
     quickcheck:arbitrary(Subtype, Example),
-    \+ is_of_type(Type, Example),
+    \+ error:is_of_type(Type, Example),
     !.
