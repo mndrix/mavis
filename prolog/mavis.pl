@@ -1,4 +1,7 @@
-:- module(mavis, [the/2]).
+:- module(mavis, [ the/2
+                 , has_subtype/2
+                 ]).
+
 
 /** <module> Optional type declarations
 Declare optional types which are checked during development time.
@@ -104,10 +107,50 @@ user:term_expansion((Head-->Body), (Head-->{TypeGoal},Body)) :-
 :- endif.
 
 
+% below here, code that loads all the time
 
+%% type_subtype(?Type, ?Subtype)
+%
+%  Multifile predicate for declaring that a Type has a Subtype. It
+%  should only be necessary to add clauses to this predicate if
+%  has_subtype/2 has trouble deriving this information based on
+%  your definition of `quickcheck:arbitrary/2`.
+:- dynamic type_subtype/2.
+:- multifile type_subtype/2.
 
+%% has_subtype(+Type, +Subtype) is semidet.
+%
+%  True if all values of Subtype are also values of Type. This can be
+%  used to determine whether arguments of one type can be passed to a
+%  predicate which demands arguments of another type.
+%
+%  This predicate performs probabilistic subtype detection by leveraging
+%  your definitions for `error:has_type/2` and `quickcheck:arbitrary/2`.
+%  If this predicate is not detecting your types correctly, either
+%  improve your quickcheck:arbitrary/2 definition or add clauses to
+%  the multifile predicate type_subtype/2.
+has_subtype(Type, Subtype) :-
+    ( var(Type); var(Subtype) ),
+    !,
+    fail.
+has_subtype(Type, Subtype) :-
+    type_subtype(Type, Subtype),
+    !.
+has_subtype(Type, Subtype) :-
+    % lazy load some libraries we'll need only here
+    use_module(library(quickcheck)),
+    use_module(library(error)),
 
+    must_be(nonvar, Type),
+    must_be(arbitrary_type, Subtype),
+    \+ counter_example(Type, Subtype, _),
+    assert(type_subtype(Type, Subtype)).
 
-
-
-
+% find a value (Example) which belongs to Subtype but not
+% to Type.  This demonstrates that Subtype is not a strict
+% subset of Type.
+counter_example(Type, Subtype, Example) :-
+    between(1,100,_),
+    quickcheck:arbitrary(Subtype, Example),
+    \+ is_of_type(Type, Example),
+    !.
