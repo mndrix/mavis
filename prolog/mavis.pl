@@ -1,6 +1,7 @@
 :- module(mavis, [ the/2
                  , has_intersection/2
                  , has_subtype/2
+                 , known_type/1
                  ]).
 
 
@@ -192,3 +193,21 @@ shared_value(Type, Subtype, Value) :-
     quickcheck:arbitrary(Subtype, Value),
     error:is_of_type(Type, Value),
     !.
+
+
+%% known_type(?Type:type) is semidet.
+%
+%  True if Type is a type known to error:has_type/2. Iterates
+%  all known types on backtracking. Be aware that some types are
+%  polymorphic (like `list(T)`) so Type may be a non-ground term.
+%
+%  As a convenience, the type named `type` describes the set of all
+%  values for which `known_type/1` is true.
+known_type(Type) :-
+    dif(Type, impossible),  % library(error) implementation detail
+    clause(error:has_type(Type, _), _Body, _Ref).
+
+
+:- multifile error:has_type/2.
+error:has_type(type, T) :-
+    known_type(T).
