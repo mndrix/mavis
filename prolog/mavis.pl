@@ -11,6 +11,7 @@ See pack documentation for more information.
 */
 
 module_wants_mavis(Module) :-
+    Module \= mavis,
     predicate_property(Module:the(_,_), imported_from(mavis)).
 
 %%	the(+Type, ?Value) is det.
@@ -80,7 +81,6 @@ type_declaration(Var, arg(_,_,Type), the(Type, Var)).
 build_type_assertions(Slash, Head, TypeGoal) :-
     % does this module want mavis type assertions?
     prolog_load_context(module, Module),
-    Module \= mavis,
     mavis:module_wants_mavis(Module),
 
     % fetch this predicate's structured comment
