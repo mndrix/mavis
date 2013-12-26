@@ -4,6 +4,7 @@ title('Optional type declarations').
 keywords([types]).
 
 requires(list_util).
+requires(quickcheck).
 
 author( 'Michael Hendricks', 'michael@ndrix.org' ).
 packager( 'Michael Hendricks', 'michael@ndrix.org' ).

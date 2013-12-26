@@ -5,6 +5,10 @@
                  ]).
 
 
+:- use_module(library(quickcheck)).
+:- use_module(library(error)).
+
+
 /** <module> Optional type declarations
 Declare optional types which are checked during development time.
 See pack documentation for more information.
@@ -140,10 +144,6 @@ has_subtype(Type, Subtype) :-
     type_subtype(Type, Subtype),
     !.
 has_subtype(Type, Subtype) :-
-    % lazy load some libraries we'll need here
-    use_module(library(quickcheck)),
-    use_module(library(error)),
-
     error:must_be(nonvar, Type),
     error:must_be(arbitrary_type, Subtype),
     \+ counter_example(Type, Subtype, _),
@@ -179,10 +179,6 @@ has_intersection(Type, Intersection) :-
     type_intersection(Type, Intersection),
     !.
 has_intersection(Type, Subtype) :-
-    % lazy load some libraries we'll need here
-    use_module(library(quickcheck)),
-    use_module(library(error)),
-
     error:must_be(nonvar, Type),
     error:must_be(arbitrary_type, Subtype),
     shared_value(Type, Subtype, _),
