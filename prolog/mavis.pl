@@ -18,7 +18,7 @@ module_wants_mavis(Module) :-
     Module \= mavis,
     predicate_property(Module:the(_,_), imported_from(mavis)).
 
-%%	the(+Type, ?Value) is det.
+%%	the(+Type:type, ?Value) is det.
 %
 %	Declare that Value has the given Type.
 %	Succeeds if Value is bound to a value that's compatible
