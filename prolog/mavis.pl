@@ -90,6 +90,7 @@ build_type_assertions(Slash, Head, TypeGoal) :-
 
     % parse and normalize mode description
     mode_declaration(Comment, ModeText),
+    %debug(mavis, "~q has modeline `~s`~n", [Module:Indicator, ModeText]),
     read_mode_declaration(ModeText, RawMode),
     normalize_mode(RawMode, ModeArgs, _Determinism),
 
