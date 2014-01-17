@@ -1,8 +1,8 @@
 name(mavis).
 title('Optional type declarations').
 
-version('0.2.2').
-download('http://packs.ndrix.com/mavis/mavis-0.2.2.tgz').
+version('0.2.3').
+download('http://packs.ndrix.com/mavis/mavis-0.2.3.tgz').
 
 keywords([types]).
 

@@ -68,10 +68,7 @@ have no runtime overhead.
 
 # Changes in this Version
 
-  * Better mode line handling for type comments
-  * Avoid singleton warnings
-  * Modernize pack layout
-  * Require SWI Prolog V6.3.16 or higher
+  * Fix packaging error
 
 # Installation
 
