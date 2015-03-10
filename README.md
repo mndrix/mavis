@@ -79,6 +79,3 @@ Using SWI-Prolog 6.3.16 or later:
 
 Source code available and pull requests accepted on GitHub:
 https://github.com/mndrix/mavis
-
-@author Michael Hendricks <michael@ndrix.org>
-@license BSD
