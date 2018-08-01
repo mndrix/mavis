@@ -103,8 +103,19 @@ build_type_assertions(Slash, Head, TypeGoal) :-
     exclude(=@=(the(any, _)), AllTypes, Types),
     xfy_list(',', TypeGoal, Types).
 
+bodyless_predicate(Term) :-
+    \+ Term = (:-_),
+    \+ Term = (_:-_),
+    \+ Term = (_-->_),
+    \+ Term = end_of_file.
+
 user:term_expansion((Head:-Body), (Head:-TypeGoal,Body)) :-
     Slash = '/',
+    build_type_assertions(Slash, Head, TypeGoal).
+
+user:term_expansion(Head,(Head:-TypeGoal)) :-
+    bodyless_predicate(Head),
+    Slash = '/', 
     build_type_assertions(Slash, Head, TypeGoal).
 
 user:term_expansion((Head-->Body), (Head-->{TypeGoal},Body)) :-
