@@ -1,3 +1,5 @@
+This repository is archived.  See https://github.com/GavinMendelGleason/mavis/ for the current maintainer.
+
 # Synopsis
 
     :- use_module(library(mavis)).
