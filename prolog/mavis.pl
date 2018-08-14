@@ -2,6 +2,7 @@
                  , has_intersection/2
                  , has_subtype/2
                  , known_type/1
+                 , build_type_assertions/3
                  ]).
 
 
